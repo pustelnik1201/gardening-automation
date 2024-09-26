@@ -10,7 +10,7 @@ WATER_MLS	= 50 # [ml]
 
 class Sector:	
     # constructor
-    def __init__(self, pump_pin, soil_moist_pin, soil_moist_to_water, tube_length, water_mls=WATER_MLS, tube_diam=TUBE_DIAM, pump_speed=PUMP_SPEED):
+    def __init__(self, pump_pin, soil_moist_pin, soil_moist_lowest, tube_length, water_mls=WATER_MLS, tube_diam=TUBE_DIAM, pump_speed=PUMP_SPEED):
         # init sector's pump
         self.pump = Pin(pump_pin, Pin.OUT)
         self.pump.value(0)
@@ -21,7 +21,7 @@ class Sector:
         self.soil_moist_read = self.soil_moist.read()
         
         # moisture indicating a need for watering
-        self.soil_moist_low = soil_moist_to_water 
+        self.soil_moist_low = soil_moist_lowest 
         
         self.water_mls = water_mls
         # V = PI * r^2 * length [mm^3] -> *0.001 -> [ml]
@@ -30,33 +30,24 @@ class Sector:
         # used for watering automatically
         self.needs_watering = False
     
-    def Sectors(self, pump_pins, moist_pins, water_mls, tube_length, tube_diam=None, pump_speed=None):
-        # assign global lib tube diameter if not given
-        if tube_diam is None:
-            tube_diam = [TUBE_DIAM] * len(pump_pins)  
-        # assign global lib pump speed if not given
-        if pump_speed is None:
-            pump_speed = [PUMP_SPEED] * len(pump_pins)
-        # construct a list of Sector objects
-        sectors = [
-            Sector(pump_pins[i], moist_pins[i], water_mls[i], tube_length[i], tube_diam=tube_diam[i], pump_speed=pump_speed[i])
-            for i in range(len(pump_pins))
-            ]
-        return sectors
     
     # reading moisture and checking whether watering needed
     def read_moist(sectors):
         # checking if sectors is a single Sector:
         if isinstance(sectors, Sector):
-            sectors.soil_moist_read = self.soil_noist.read()
+            sectors.soil_moist_read = sectors.soil_moist.read()
+            print('Sector moisture: ', sectors.soil_moist_read)
             if sectors.soil_moist_read > sectors.soil_moist_low:
                 sectors.needs_watering = True
+                print('Sectors needs watering!')
         # checking if sectors is a list of Sectors
         elif isinstance(sectors, list):
-            for x in sectors:
-                sectors[x].soil_moist_read = self.soil_moist.read()
+            for x in range(len(sectors)):
+                sectors[x].soil_moist_read = sectors[x].soil_moist.read()
+                print('Sector ', x, ' moisture: ', sectors[x].soil_moist_read)
                 if sectors[x].soil_moist_read > sectors[x].soil_moist_low:
                     sectors[x].needs_watering = True
+                    print('Sector ', x, ' needs watering!')
     
     #  watering every time when called
     def water(self, water_mls=None):
@@ -98,6 +89,23 @@ class Sector:
                     sectors[x].water()
                     print('Sector ', x, ' watered!')
 
+def Sectors(pump_pins, moist_pins, soil_moist_lowest, tube_length, water_mls=None, tube_diam=None, pump_speed=None):
+    if water_mls is None:
+        water_mls = [WATER_MLS] * len(pump_pins)
+    # assign global lib tube diameter if not given
+    if tube_diam is None:
+        tube_diam = [TUBE_DIAM] * len(pump_pins)  
+    # assign global lib pump speed if not given
+    if pump_speed is None:
+        pump_speed = [PUMP_SPEED] * len(pump_pins)
+        
+    # construct a list of Sector objects
+    sectors = [
+        Sector(pump_pins[i], moist_pins[i], soil_moist_lowest[i], tube_length[i], water_mls=water_mls[i], tube_diam=tube_diam[i], pump_speed=pump_speed[i])
+        for i in range(len(pump_pins))
+        ]
+    return sectors
+
 # initialising wifi connection
 def connect_to_wifi(WIFI_SSID, WIFI_PASS):
     wifi = network.WLAN(network.STA_IF)
@@ -109,5 +117,6 @@ def connect_to_wifi(WIFI_SSID, WIFI_PASS):
             pass
     print('IP:', wifi.ifconfig()[0])
     
+
 
 
