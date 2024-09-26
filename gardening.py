@@ -45,7 +45,7 @@ class Sector:
         return sectors
     
     # reading moisture and checking whether watering needed
-    def read_moist(sectors, automatic=False):
+    def read_moist(sectors):
         # checking if sectors is a single Sector:
         if isinstance(sectors, Sector):
             sectors.soil_moist_read = self.soil_noist.read()
