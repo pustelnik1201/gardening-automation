@@ -5,9 +5,9 @@ from time import sleep, ticks_ms
 from gardening import Sector, Sectors, connect_to_wifi
 
 # credentials to connect to Wifi and Blynk IoT
-BLYNK_AUTH = 'jcqlyDh5d9SWLrI0WT2NnmgIYebNHznO'
-WIFI_SSID = 'SecretNetwork'
-WIFI_PASS = 'onom@topeiA123'
+BLYNK_AUTH =
+WIFI_SSID = 
+WIFI_PASS = 
 
 water_mls1 = 300
 
