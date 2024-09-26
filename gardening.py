@@ -21,7 +21,7 @@ class Sector:
         self.soil_moist_read = self.soil_moist.read()
         
         # moisture indicating a need for watering
-        self.soil_moist_low = soil_moist_to_low 
+        self.soil_moist_low = soil_moist_to_water 
         
         self.water_mls = water_mls
         # V = PI * r^2 * length [mm^3] -> *0.001 -> [ml]
