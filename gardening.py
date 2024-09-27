@@ -87,6 +87,7 @@ class Sector:
             for x in sectors:
                 if sectors[x].needs_watering:   
                     sectors[x].water()
+                    sector[x].needs_watering = False
                     print('Sector ', x, ' watered!')
 
 def Sectors(pump_pins, moist_pins, soil_moist_lowest, tube_length, water_mls=None, tube_diam=None, pump_speed=None):
